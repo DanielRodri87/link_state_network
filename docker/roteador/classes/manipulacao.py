@@ -1,6 +1,5 @@
 import subprocess
-import re
-
+import re 
 class Manipulacao:
     
     @staticmethod
@@ -49,33 +48,34 @@ class Manipulacao:
         return linhas
     
     @staticmethod
-    def traduzir_caminho(origem, traceroute_output):
-        caminho = [origem]
-        hops = traceroute_output.split('\n')
-        ip_pattern = re.compile(r'\((.*?)\)')  # Regex to find IPs in parentheses
+    def traduzir_caminho(roteador, caminho, qtd_roteadores=0):
+        hops = Manipulacao.extrair_linhas(caminho)
+        traducao = []
+        traducao.append(roteador)           
+        for hop in hops[1:]:
+            if 'roteador' in hop:
+                nome_roteador = hop.split()[1].split('.')[0]
+                traducao.append(nome_roteador)
+            elif hop and '(' in hop and ')' in hop:
+                try:
+                    n1, n2 = hop.split('(')[1].split(')')[0].split('.')[2:]
+                    numero_roteador = 0
+                    if n2 == '4':
+                        numero_roteador = int(n1) + 2
+                        if numero_roteador > qtd_roteadores:
+                            numero_roteador = numero_roteador % qtd_roteadores
+                    elif n2 == '3':
+                        numero_roteador = int(n1)
+                        if numero_roteador > qtd_roteadores:
+                            numero_roteador = numero_roteador % qtd_roteadores
+                    else:
+                        numero_roteador = int(n1) + 1
+                    traducao.append(f'roteador{numero_roteador}')
+                except (ValueError, IndexError):
+                    # Handle unexpected hop format gracefully
+                    continue
         
-        for hop_line in hops[1:]:  # Skip the first line (header)
-            if not hop_line.strip():
-                continue
-            # Find all IPs in the line
-            ips = ip_pattern.findall(hop_line)
-            if ips:
-                # Take the first IP found
-                ip = ips[0]
-                octets = ip.split('.')
-                if len(octets) >= 3:
-                    try:
-                        numero_roteador = int(octets[2]) + 1
-                        caminho.append(f"roteador{numero_roteador}")
-                    except (ValueError, IndexError):
-                        # Handle invalid octet or index error
-                        caminho.append("unknown")
-            else:
-                # No IP found (e.g., timeout '*')
-                caminho.append("*")
-        
-        return ' -> '.join(caminho)
-
+        return ' -> '.join(traducao)
     
 if __name__ == "__main__":
     # Teste da classe Manipulacao
