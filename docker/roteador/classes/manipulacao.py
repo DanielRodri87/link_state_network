@@ -1,4 +1,5 @@
 import subprocess
+import re
 
 class Manipulacao:
     
@@ -48,19 +49,33 @@ class Manipulacao:
         return linhas
     
     @staticmethod
-    def traduzir_caminho(roteador,caminho):
-        hops = Manipulacao.extrair_linhas(caminho)
-        traducao = []
-        traducao.append(roteador)
-        for hop in hops:
-            if 'roteador' in hop:
-                nome_roteador = hop.split()[1].split('.')[0]
-                traducao.append(nome_roteador)
-            elif hop:
-                numero_roteador = int(hop.split('(')[1].split(')')[0].split('.')[2]) + 1
-                traducao.append(f'roteador{numero_roteador}',)
-                
-        return ' -> '.join(traducao)
+    def traduzir_caminho(origem, traceroute_output):
+        caminho = [origem]
+        hops = traceroute_output.split('\n')
+        ip_pattern = re.compile(r'\((.*?)\)')  # Regex to find IPs in parentheses
+        
+        for hop_line in hops[1:]:  # Skip the first line (header)
+            if not hop_line.strip():
+                continue
+            # Find all IPs in the line
+            ips = ip_pattern.findall(hop_line)
+            if ips:
+                # Take the first IP found
+                ip = ips[0]
+                octets = ip.split('.')
+                if len(octets) >= 3:
+                    try:
+                        numero_roteador = int(octets[2]) + 1
+                        caminho.append(f"roteador{numero_roteador}")
+                    except (ValueError, IndexError):
+                        # Handle invalid octet or index error
+                        caminho.append("unknown")
+            else:
+                # No IP found (e.g., timeout '*')
+                caminho.append("*")
+        
+        return ' -> '.join(caminho)
+
     
 if __name__ == "__main__":
     # Teste da classe Manipulacao

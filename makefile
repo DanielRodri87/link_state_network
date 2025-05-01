@@ -23,3 +23,9 @@ teste_vias:
 
 teste_ping_host:
 	@cd docker/host/script_teste && python3 teste_ping.py
+
+install_deps:
+	pip install --break-system-packages networkx matplotlib pyyaml
+
+topologia:
+	@cd docker/roteador/test && python3 mostrar_topologia.py

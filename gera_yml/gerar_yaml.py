@@ -171,17 +171,24 @@ def gerar_yaml(num_roteadores, hosts_por_rede, topologia="anel"):
 if __name__ == "__main__":
     topologias = [
         "anel",
-        # "estrela",
-        # "totalmente_conectada",
+        "estrela",
+        "totalmente_conectada",
         "tree",
-        # "linha"
+        "linha"
     ]
     
-    # valor = random.randint(0, len(topologias) - 1)
-    topologia = topologias[0]
+    # Seleção aleatória
+    valor = random.randint(0, len(topologias) - 1)
+    topologia = topologias[valor]
     
-    print(f"Topologia escolhida: {topologia}")
-    os.system('pause')
+    # Limpa a tela e exibe a topologia selecionada
+    os.system('clear')
+    print("═" * 50)
+    print(f"🔥 Topologia selecionada: {topologia.upper()}")
+    print("═" * 50)
+    
+    # Pausa para confirmação
+    input("\nPressione ENTER para continuar ou CTRL+C para cancelar...")
     
     # Exemplo de uso:
     gerar_yaml(6, 2, topologia=topologia)
