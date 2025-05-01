@@ -3,7 +3,7 @@ import random
 import yaml
 import ipaddress
 
-def gerar_yaml(num_roteadores, hosts_por_rede, topologia="anel"):
+def gerar_yaml(num_roteadores, hosts_por_rede, topologia="estrela"):
     if num_roteadores < 3:
         raise ValueError("Número de roteadores deve ser pelo menos 3.")
     if hosts_por_rede < 1 or hosts_por_rede > 254:
