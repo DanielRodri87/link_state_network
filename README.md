@@ -1,51 +1,98 @@
-# Projeto de Simulação de Rede de Computadores
+# 🖧 Projeto de Simulação de Rede de Computadores
+### Daniel Rodrigues de Sousa, Redes II, 2025.1
 
-Este projeto tem como objetivo:
+Este projeto simula uma rede de computadores com hosts e roteadores utilizando o algoritmo de Estado de Enlace (Link State Routing). É uma ferramenta educacional criada no contexto da disciplina Redes II, com foco em aprendizado e experimentação.
 
-- Desenvolver uma simulação de uma rede de computadores composta por hosts e roteadores.
-- Utilizar Python e Docker para implementar a simulação.
-- Implementar o algoritmo de roteamento por estado de enlace (Link State Routing Algorithm) nos roteadores.
+## 📌 Objetivos
 
-## Pré-requisitos
+- 📡 Simular o funcionamento de uma rede de computadores.
+- 🔁 Implementar o algoritmo de roteamento por estado de enlace.
+- 🐍 Utilizar Python para lógica de rede e Docker para isolar os ambientes de rede.
+- 🌐 Permitir a criação de diferentes topologias de rede.
 
-Certifique-se de ter o Docker e o Make instalado em sua máquina antes de prosseguir.
+## ⚙️ Pré-requisitos
 
-## Como executar
+Antes de começar, você precisa ter instalado:
 
-Primeiramente você deve ter o make instalado na sua máquina:
+- **Docker**
+- **Make**
+- **Python** (caso queira instalar o make via pip)
 
-`pip install make`
+Instale o Make com o comando:
 
-Para executar o projeto, basta rodar o seguinte comando no terminal:
+```bash
+pip install make
+```
 
-`make`
+## ▶️ Como Executar
 
-## Protocolo Utilizado
+Para gerar uma topologia:
 
-O protocolo utilizado para a comunicação entre os hosts e roteadores é o UDP (User Datagram Protocol). O UDP é um protocolo de transporte que permite a troca de datagramas entre dispositivos em uma rede. Ele é mais leve e rápido do que o TCP (Transmission Control Protocol), mas não garante a entrega dos pacotes, tornando-o adequado para aplicações onde a velocidade é mais importante do que a confiabilidade.
+```bash
+cd gera_yml
+```
+```bash
+python3 gerar_yaml.py
+```
 
-O UDP é amplamente utilizado em aplicações de streaming de áudio e vídeo, jogos online e outras aplicações em tempo real onde a latência é crítica.
+1. Abre um menu para que o usuário escolha a topologia desejada;
+2. Esse código gera um arquivo **config_yaml** que contém a topologia selecionada
 
-### Justificativa do uso do UDP
+Para rodar a simulação:
 
-O uso do UDP neste projeto é justificado pela necessidade de uma comunicação rápida e eficiente entre os hosts e roteadores. O protocolo UDP permite a troca de mensagens sem a sobrecarga de controle de conexão, o que é ideal para simulações onde a latência deve ser minimizada. Além disso, o UDP é mais simples de implementar e configurar em comparação com o TCP, tornando-o uma escolha adequada para este projeto.
+```bash
+make
+```
 
-## Topologia Construída
+Esses comandos irão:
 
-A topologia construída para a simulação é uma rede de computadores composta por n hosts e n roteadores. Os hosts estão conectados aos roteadores, que por sua vez estão interconectados entre si dependendo do número de roteadores definidos na configuração e da topologia escolhida, pois podemos gerar as seguintes topologias:
+- Criar os containers Docker para hosts e roteadores.
+- Gerar uma topologia aleatória.
+- Iniciar a comunicação entre os nós da rede.
 
-- Topologia em estrela
-- Topologia em anel
-- Topologia totalmente conectada
-- Topologia em árvore
-- Topologia em linha
+## 📡 Protocolo de Comunicação
 
-As topologias são escolhidas aleatoriamente no inicio da execução do projeto, garantindo uma variedade de cenários para a simulação. Cada topologia tem suas próprias características e desafios, permitindo uma análise mais abrangente do desempenho da rede.
+A comunicação entre os hosts e roteadores é feita usando o **UDP (User Datagram Protocol)**.
 
-### Como a topologia é construída
+### Por que UDP?
 
-A topologia é construída através da definição de n hosts e n roteadores, onde os hosts se conectam aos roteadores. A configuração da topologia é realizada aleatoriamente, permitindo a simulação de diferentes cenários de rede. Dependendo da topologia escolhida, as conexões entre os roteadores podem variar, proporcionando uma análise detalhada do desempenho da rede em diferentes condições.
+- ⚡ **Alta velocidade**: ideal para aplicações em tempo real.
+- 🔁 **Sem confirmação**: não há verificação de entrega dos pacotes, o que simplifica a simulação.
+- ⚙️ **Leve e simples**: menos sobrecarga que o TCP.
 
-## Observações
+UDP é amplamente utilizado em:
 
-Este projeto foi desenvolvido como parte do curso de Redes II e visa demonstrar conceitos fundamentais de roteamento e simulação de redes.
+- Transmissões de áudio e vídeo em tempo real
+- Jogos online
+- Aplicações onde a latência é mais importante que a confiabilidade
+
+## 🕸️ Topologias de Rede
+
+Durante a execução, uma topologia aleatória é escolhida entre:
+
+- 🌟 **Estrela**
+- 🔗 **Anel**
+- 🔄 **Totalmente conectada**
+- 🌳 **Árvore**
+- 📏 **Linha**
+
+## 🔧 Como funciona a construção
+
+- São definidos `n` hosts e `n` roteadores.
+- Cada host se conecta a um roteador.
+- A conexão entre roteadores depende da topologia selecionada.
+
+Essa abordagem permite simular diversos cenários de rede, com diferentes comportamentos e complexidades.
+
+## 🧪 Exemplos de Aplicação
+
+Este projeto pode ser utilizado para:
+
+- 🧠 **Compreensão prática de algoritmos de roteamento**
+- 🧑‍💻 **Simulação de comportamento de redes reais**
+- 📊 **Análise de desempenho em diferentes topologias**
+- 🎓 **Apoio a atividades acadêmicas e laboratoriais**
+
+## 🎓 Observações Finais
+
+Este projeto foi desenvolvido como parte da disciplina Redes II e tem como principal objetivo demonstrar conceitos fundamentais de redes e roteamento de maneira prática, interativa e flexível.
