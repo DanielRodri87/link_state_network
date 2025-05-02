@@ -44,10 +44,11 @@ Para rodar a simulação:
 make
 ```
 
-- Obs: Caso esteja na pasta /gera_yml, volte para a raiz do projeto, e rode:
+- Obs: Caso esteja na pasta /gera_yml, volte para a raiz do projeto, por meio desse comando:
 ```bash
 cd ..
 ```
+- Agora sim, rode:
 ```bash
 make
 ```
