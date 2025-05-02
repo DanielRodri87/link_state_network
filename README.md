@@ -44,6 +44,14 @@ Para rodar a simulação:
 make
 ```
 
+- Obs: Caso esteja na pasta /gera_yml, volte para a raiz do projeto, e rode:
+```bash
+cd ..
+```
+```bash
+make
+```
+
 Esses comandos irão:
 
 - Criar os containers Docker para hosts e roteadores.
