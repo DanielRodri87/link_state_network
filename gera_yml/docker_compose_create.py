@@ -1,9 +1,10 @@
 import yaml
 from jinja2 import Environment, FileSystemLoader
-
+import os 
 def main():
-    # Carregar configuração do arquivo YAML
-    with open('config.yaml') as f:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    with open(os.path.join(script_dir, 'config.yaml')) as f:
         config = yaml.safe_load(f)
 
     routers = []
@@ -21,7 +22,7 @@ def main():
         })
 
     # Configurar o ambiente Jinja2
-    env = Environment(loader=FileSystemLoader('.'))
+    env = Environment(loader=FileSystemLoader(script_dir))
     template = env.get_template('docker-compose.j2')
 
     # Renderizar o template com os dados

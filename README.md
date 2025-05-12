@@ -35,8 +35,13 @@ cd gera_yml
 python3 gerar_yaml.py
 ```
 
+```bash
+python3 docker_compose_create.py
+```
+
 1. Abre um menu para que o usuário escolha a topologia desejada;
 2. Esse código gera um arquivo **config_yaml** que contém a topologia selecionada
+3. Gerar o docker compose com a topologia nova gerada
 
 Para rodar a simulação:
 

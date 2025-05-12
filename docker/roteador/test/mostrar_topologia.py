@@ -7,7 +7,7 @@ def ler_topologia():
     # Lê o arquivo config.yaml gerado
     config_path = os.path.join(
         os.path.dirname(__file__), 
-        '../../../config.yaml'
+        '../../../gera_yml/config.yaml'
     )
     
     with open(config_path, 'r') as file:

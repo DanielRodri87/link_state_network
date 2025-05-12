@@ -1,0 +1,79 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% How to use writeLaTeX: 
+%
+% You edit the source code here on the left, and the preview on the
+% right shows you the result within a few seconds.
+%
+% Bookmark this page and share the URL with your co-authors. They can
+% edit at the same time!
+%
+% You can upload figures, bibliographies, custom classes and
+% styles using the files menu.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}   % Template SBC
+\usepackage{graphicx,url}   % Suporte para figuras e URLs
+% \usepackage[brazil]{babel}  % Comente esta linha caso o documento esteja em inglês
+\usepackage[utf8]{inputenc} % Suporte a caracteres UTF-8
+\usepackage{cite}           % Estilo numérico para citações
+
+\bibliographystyle{sbc}     % Estilo das referências no padrão SBC
+\sloppy                     % Corrige problemas de justificação
+
+\title{}
+
+\author{Daniel Rodrigues de Sousa\inst{1}}
+
+\address{Universidade Federal do Piauí - Campus Senador Helvídio Nunes Barros
+  (UFPI)\\
+  Caixa Postal 64049-55 -- 64.607-670 -- Picos -- PI -- Brazil
+  \email{daniel.sousa@ufpi.edu.br}
+}
+
+\begin{document} 
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+     
+\begin{resumo} 
+
+\end{resumo}
+
+
+\section{Introdução}
+
+\section{Metodologia}
+
+Este trabalho foi conduzido com base em uma abordagem sistemática para a implementação e análise do algoritmo Link State em redes computacionais. A metodologia foi cuidadosamente estruturada para garantir consistência nos resultados, contemplando desde a configuração do ambiente de desenvolvimento até a definição das métricas de avaliação utilizadas na análise de desempenho.
+
+\subsection{Ambiente de Desenvolvimento}
+
+A implementação foi realizada utilizando a linguagem de programação Python, na versão 3.8, escolhida pela sua clareza sintática e pela ampla gama de bibliotecas voltadas ao tratamento de grafos e análise de redes. Dentre essas bibliotecas, destaca-se o uso do \texttt{NetworkX} para a modelagem e manipulação da topologia de rede, bem como do \texttt{Matplotlib} para a geração de visualizações gráficas que auxiliam na interpretação dos resultados. O desenvolvimento seguiu o paradigma de programação orientada a objetos, promovendo a modularização e a reutilização do código. Para garantir a consistência das dependências e a reprodutibilidade dos experimentos, foi configurado um ambiente virtual Python (\texttt{venv}), no qual todas as bibliotecas necessárias foram instaladas de forma controlada.
+
+\subsection{Arquitetura da Rede}
+
+A rede simulada foi projetada com o objetivo de refletir um cenário realista de roteamento, composto por seis nós principais. Cada um desses nós representa um roteador com capacidade de processamento autônoma, capaz de manter sua própria tabela de roteamento. As conexões entre os nós foram estabelecidas por meio de enlaces bidirecionais, com pesos variáveis entre 1 e 10, representando diferentes custos de transmissão. A topologia da rede foi representada por uma matriz de adjacência de ordem $6 \times 6$, o que permitiu uma implementação eficiente do algoritmo de roteamento. Essa modelagem possibilitou a simulação dinâmica de eventos como falhas e reconfigurações, essenciais para a avaliação do comportamento do algoritmo em condições reais de operação.
+
+\subsection{Implementação do Algoritmo}
+
+A implementação do algoritmo seguiu os princípios do protocolo OSPF (Open Shortest Path First), uma das abordagens mais consagradas baseadas em estado de enlace. Inicialmente, os roteadores realizam a descoberta de vizinhos por meio do envio periódico de mensagens \texttt{HELLO}, estabelecendo adjacências com os nós diretamente conectados. Em seguida, os roteadores constroem e mantêm uma visão da topologia da rede a partir da troca de LSAs (Link State Advertisements), que descrevem o estado de seus enlaces. Com base nessas informações, cada nó executa o algoritmo de Dijkstra para calcular os caminhos de menor custo até os demais roteadores, atualizando sua tabela de roteamento conforme necessário. O sistema é capaz de responder dinamicamente a alterações na topologia, promovendo a reconvergência da rede de forma autônoma.
+
+\subsection{Métodos de Análise}
+
+A análise do funcionamento do algoritmo foi realizada por meio de testes sistemáticos, projetados para verificar tanto sua correção quanto sua eficiência. Foram conduzidos testes de conectividade fim a fim, com o objetivo de assegurar que rotas válidas pudessem ser estabelecidas entre quaisquer dois nós da rede. Além disso, foram implementados mecanismos para medir o tempo de convergência do algoritmo após a ocorrência de mudanças na topologia, como falhas ou recuperação de enlaces. Também se avaliou o overhead introduzido pelas mensagens de controle utilizadas na manutenção das informações de estado dos enlaces. Para validar a eficiência das rotas calculadas, estas foram comparadas com os caminhos teoricamente ótimos gerados a partir da topologia da rede.
+
+\subsection{Métricas de Avaliação}
+
+A fim de quantificar o desempenho da solução implementada, foram adotadas diversas métricas de avaliação. O tempo de convergência do algoritmo foi medido em diferentes cenários de alteração topológica, permitindo avaliar a rapidez com que a rede recupera sua estabilidade. Também foi contabilizado o número total de mensagens de controle trocadas durante a operação normal e em situações de reconvergência, fornecendo uma estimativa do custo de comunicação associado ao protocolo. A eficiência das rotas calculadas foi avaliada por meio de comparações com os caminhos ótimos esperados, considerando os custos associados a cada enlace. Por fim, o uso de recursos computacionais, como CPU e memória, foi monitorado durante a execução do algoritmo, com o intuito de avaliar sua escalabilidade e viabilidade em redes de maior porte.
+
+
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}

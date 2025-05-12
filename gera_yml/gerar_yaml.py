@@ -148,10 +148,12 @@ def gerar_yaml(num_roteadores, hosts_por_rede, topologia="estrela"):
         'hosts': hosts
     }
 
-    with open('config.yaml', 'w') as file:
+    config_path = os.path.join('gera_yml', 'config.yaml')
+    
+    with open(config_path, 'w') as file:
         yaml.dump(dados, file, sort_keys=False, default_flow_style=False)
 
-    print(f"\n✅ Arquivo 'config.yaml' gerado com sucesso para topologia '{topologia}'!\n")
+    print(f"\n✅ Arquivo 'gera_yml/config.yaml' gerado com sucesso para topologia '{topologia}'!\n")
 
 def exibir_menu_topologias():
     topologias = {
