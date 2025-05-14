@@ -29,3 +29,6 @@ install_deps:
 
 topologia:
 	@cd docker/roteador/test && python3 mostrar_topologia.py
+
+limiar:
+	@cd docker/roteador/test && python3 limiares.py

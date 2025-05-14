@@ -187,4 +187,4 @@ def exibir_menu_topologias():
 if __name__ == "__main__":
     topo = exibir_menu_topologias()
     input("\nPressione ENTER para continuar ou CTRL+C para cancelar...")
-    gerar_yaml(6, 2, topologia=topo)
+    gerar_yaml(3, 2, topologia=topo)
