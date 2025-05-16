@@ -48,4 +48,4 @@ def teste():
 if __name__ == "__main__":
     teste_de_vias()
     teste_de_vias_table()
-    print("Teste de rotas concluído.")
+    print("Teste de vias concluído.")

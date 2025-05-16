@@ -33,7 +33,7 @@ def main():
     )
 
     # Salvar o docker-compose.yml gerado
-    with open('../docker-compose.yml', 'w') as f:
+    with open('docker-compose.yml', 'w') as f:
         f.write(output)
 
     print("Arquivo docker-compose.yml gerado com sucesso.")
