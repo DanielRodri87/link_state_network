@@ -218,4 +218,4 @@ def exibir_menu_topologias() -> str:
 if __name__ == "__main__":
     selected_topology = exibir_menu_topologias()
     input("\nPressione ENTER para continuar ou CTRL+C para cancelar...")
-    gerar_yaml(6, 2, topologia=selected_topology)
+    gerar_yaml(10, 2, topologia=selected_topology)
