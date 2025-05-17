@@ -1,47 +1,88 @@
+"""
+Router Path Testing Module
+
+This module provides functionality for testing and verifying routing paths
+between routers in a Docker network environment using traceroute.
+"""
+
 import subprocess
 import sys
 import os
+from typing import List, Tuple
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from class_net.manipulation import Manipulacao
 from class_net.message import Mensagem
 
-def teste_de_rotas():
-    falha = []
-    roteadores = Manipulacao.roteadores_encontrados()
-    for r_origem in roteadores:
-        print(f"Testando {r_origem}...")
-        for r_destino in roteadores:
-            if r_origem != r_destino:
+def teste_de_rotas() -> None:
+    """
+    Test routing paths between all routers in the network.
+    
+    Executes traceroute between all router pairs and displays the path
+    information using color-coded output.
+    """
+    failed_routes: List[Tuple[str, str]] = []
+    router_list = Manipulacao.roteadores_encontrados()
+    
+    for source_router in router_list:
+        print(f"Testando {source_router}...")
+        for target_router in router_list:
+            if source_router != target_router:
                 try:
-                    comando = f"docker exec {r_origem} traceroute {Manipulacao.extrair_ip_gateway(r_destino)}"
-                    result = subprocess.run(comando, shell=True, check=True, text=True, capture_output=True)
-                    if result.returncode == 0:
-                        # print(Mensagem.formatar_mensagem(r_destino,(255,255,0)),':',Mensagem.formatar_sucesso(result.stdout))
-                        caminho = Manipulacao.traduzir_caminho(r_origem,result.stdout,len(roteadores))
-                        print(Mensagem.formatar_mensagem(r_destino,(255,255,0)),':',Mensagem.formatar_sucesso(caminho))
-                except subprocess.CalledProcessError as e:
-                    print(Mensagem.formatar_erro(f"{r_origem} -> {r_destino} falhou."))
-                    falha.append([r_origem, r_destino])
+                    target_gateway = Manipulacao.extrair_ip_gateway(target_router)
+                    trace_command = f"docker exec {source_router} traceroute {target_gateway}"
+                    command_result = subprocess.run(
+                        trace_command, 
+                        shell=True, 
+                        check=True, 
+                        text=True, 
+                        capture_output=True
+                    )
+                    if command_result.returncode == 0:
+                        path = Manipulacao.traduzir_caminho(
+                            source_router,
+                            command_result.stdout,
+                            len(router_list)
+                        )
+                        print(
+                            Mensagem.formatar_mensagem(target_router, (255, 255, 0)),
+                            ':',
+                            Mensagem.formatar_sucesso(path)
+                        )
+                except subprocess.CalledProcessError:
+                    print(Mensagem.formatar_erro(
+                        f"{source_router} -> {target_router} falhou."
+                    ))
+                    failed_routes.append([source_router, target_router])
                     
-    if falha:
+    if failed_routes:
         print("Roteadores com falha:")
-        for roteador, destino in falha:
-            print(Mensagem.formatar_erro(f"{roteador} -> {destino}  falhou."))
+        for source, target in failed_routes:
+            print(Mensagem.formatar_erro(f"{source} -> {target} falhou."))
         print('\n')
 
-def teste():
+def teste() -> None:
+    """Test a specific routing path for debugging purposes."""
     try:
-        # roteador1 : roteador5 -> roteador4 -> roteador3 -> roteador3 -> roteador1
-        comando = f"docker exec roteador5 traceroute 172.21.0.1"
-        result = subprocess.run(comando, shell=True, check=True, text=True, capture_output=True)
-        if result.returncode == 0:
-            caminho = Manipulacao.traduzir_caminho('roteador5',result.stdout,len(Manipulacao.roteadores_encontrados()))
-            print(Mensagem.formatar_sucesso(caminho))
-    except subprocess.CalledProcessError as e:
-        print(Mensagem.formatar_erro(f"roteador2 -> 172.21.7.1 falhou."))
+        trace_command = "docker exec roteador5 traceroute 172.21.0.1"
+        command_result = subprocess.run(
+            trace_command, 
+            shell=True, 
+            check=True, 
+            text=True, 
+            capture_output=True
+        )
+        if command_result.returncode == 0:
+            router_count = len(Manipulacao.roteadores_encontrados())
+            path = Manipulacao.traduzir_caminho(
+                'roteador5',
+                command_result.stdout,
+                router_count
+            )
+            print(Mensagem.formatar_sucesso(path))
+    except subprocess.CalledProcessError:
+        print(Mensagem.formatar_erro("roteador2 -> 172.21.7.1 falhou."))
 
 if __name__ == "__main__":
     teste_de_rotas()
-    # teste()
     print("Teste de rotas concluído.")

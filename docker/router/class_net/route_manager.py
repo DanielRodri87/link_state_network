@@ -1,101 +1,160 @@
+"""
+Route Management Module
+
+This module implements routing algorithms and path management for network routing,
+including Dijkstra's shortest path algorithm and route table management.
+"""
+
 import heapq
+from typing import Dict, List, Set, Optional, Any
 
 class GerenciadorDeRotas:
-    def __init__(self, lsdb,inativos=[]):
-        self.lsdb = lsdb
-        self.inativos = inativos
+    """
+    Manager for network routing and path calculations.
+    
+    This class handles route calculations, path finding, and maintains routing tables
+    using Dijkstra's algorithm for shortest path computation.
+    
+    Attributes:
+        lsdb (Dict): Link State Database containing network topology
+        inativos (List[str]): List of inactive routers to exclude from calculations
+        tabela_de_rotas (Dict): Routing table for all network paths
+    """
+    
+    def __init__(self, link_state_db: Dict[str, Any], inactive_routers: List[str] = None):
+        """
+        Initialize the route manager.
+        
+        Args:
+            link_state_db: Link State Database with network topology
+            inactive_routers: List of inactive router IDs
+        """
+        self.lsdb = link_state_db
+        self.inativos = inactive_routers or []
+        self.tabela_de_rotas = {}
 
-    def set_inativos(self, inativos):
-        self.inativos = inativos
+    def set_inativos(self, inactive_routers: List[str]) -> None:
+        """Update the list of inactive routers."""
+        self.inativos = inactive_routers
 
-    def _gerar_grafo(self):
-        grafo = {}
-        for router_id, dados in self.lsdb.items():
+    def _gerar_grafo(self) -> Dict[str, Dict[str, int]]:
+        """
+        Generate a graph representation from the LSDB.
+        
+        Returns:
+            Dict containing network graph with costs
+        """
+        network_graph = {}
+        for router_id, router_data in self.lsdb.items():
             if router_id in self.inativos:
                 continue
-            vizinhos = {
-                viz: info['custo']
-                for viz, info in dados['vizinhos'].items()
-                if viz not in self.inativos
+            active_neighbors = {
+                neighbor_id: info['custo']
+                for neighbor_id, info in router_data['vizinhos'].items()
+                if neighbor_id not in self.inativos
             }
-            grafo[router_id] = vizinhos
-        return grafo
+            network_graph[router_id] = active_neighbors
+        return network_graph
 
-    def dijkstra(self, origem):
-        grafo = self._gerar_grafo()
-
+    def dijkstra(self, source: str) -> Dict[str, str]:
+        """
+        Implement Dijkstra's shortest path algorithm.
+        
+        Args:
+            source: Source router ID
+            
+        Returns:
+            Dict mapping destinations to next hops
+        """
+        network_graph = self._gerar_grafo()
+        
         print(f"[Dijkstra] Inativos: {self.inativos}")
         
-        if origem not in grafo:
-            print(f"[Dijkstra] Origem {origem} não encontrada no grafo.")
+        if source not in network_graph:
+            print(f"[Dijkstra] Origem {source} não encontrada no grafo.")
             return {}
 
-        dist = {router: float('inf') for router in grafo}
-        prev = {router: None for router in grafo}
-        dist[origem] = 0
+        distances = {router: float('inf') for router in network_graph}
+        previous = {router: None for router in network_graph}
+        distances[source] = 0
+        priority_queue = [(0, source)]
 
-        heap = [(0, origem)]
-
-        while heap:
-            custo_atual, atual = heapq.heappop(heap)
-
-            if custo_atual > dist[atual]:
+        while priority_queue:
+            current_cost, current_router = heapq.heappop(priority_queue)
+            
+            if current_cost > distances[current_router]:
                 continue
 
-            for vizinho, peso in grafo[atual].items():
-                nova_dist = dist[atual] + peso
-                if vizinho in dist.keys() and nova_dist < dist[vizinho]:
-                    dist[vizinho] = nova_dist
-                    prev[vizinho] = atual
-                    heapq.heappush(heap, (nova_dist, vizinho))
+            for neighbor, weight in network_graph[current_router].items():
+                path_cost = distances[current_router] + weight
+                if neighbor in distances and path_cost < distances[neighbor]:
+                    distances[neighbor] = path_cost
+                    previous[neighbor] = current_router
+                    heapq.heappush(priority_queue, (path_cost, neighbor))
 
-        tabela_rotas = {}
-        for destino in grafo:
-            if destino == origem or dist[destino] == float('inf'):
+        routing_table = {}
+        for destination in network_graph:
+            if destination == source or distances[destination] == float('inf'):
                 continue
-            atual = destino
-            while prev[atual] != origem:
-                atual = prev[atual]
-                if atual is None:
+            current = destination
+            while previous[current] != source:
+                current = previous[current]
+                if current is None:
                     break
-            if atual:
-                tabela_rotas[destino] = atual
+            if current:
+                routing_table[destination] = current
 
-        # Evita que o próximo salto seja o próprio destino
-        tabela_rotas = {destino: prox for destino, prox in tabela_rotas.items() if prox != destino}
+        return {dest: next_hop for dest, next_hop in routing_table.items() 
+                if next_hop != dest}
+
+    def calcular_todas_rotas(self) -> None:
+        """Calculate routes for all routers in the network."""
+        self.tabela_de_rotas = {
+            router: self.dijkstra(router)
+            for router in self.lsdb.keys()
+        }
+
+    def calcular_caminho(self, source: str, destination: str, 
+                        current_path: Optional[List[str]] = None) -> Optional[List[str]]:
+        """
+        Calculate complete path between source and destination.
         
-        return tabela_rotas
-
-    def calcular_todas_rotas(self):
-        self.tabela_de_rotas = {}
-        for roteador in self.lsdb.keys():
-            self.tabela_de_rotas[roteador] = self.dijkstra(roteador)
-
-    def calcular_caminho(self, origem, destino, caminho_atual=None):
-        if caminho_atual is None:
-            caminho_atual = [origem]
+        Args:
+            source: Source router ID
+            destination: Destination router ID
+            current_path: Current path being built (used in recursion)
+            
+        Returns:
+            List of router IDs forming the path, or None if no path exists
+        """
+        if current_path is None:
+            current_path = [source]
         
-        if origem == destino:
-            return caminho_atual
+        if source == destination:
+            return current_path
 
-        if origem not in self.tabela_de_rotas or destino not in self.tabela_de_rotas[origem]:
+        if (source not in self.tabela_de_rotas or 
+            destination not in self.tabela_de_rotas[source]):
             return None
         
-        proximo_salto = self.tabela_de_rotas[origem][destino]
-        novo_caminho = caminho_atual + [proximo_salto]
+        next_hop = self.tabela_de_rotas[source][destination]
+        updated_path = current_path + [next_hop]
         
-        return self.calcular_caminho(proximo_salto, destino, novo_caminho)
+        return self.calcular_caminho(next_hop, destination, updated_path)
 
-    def exibir_caminhos(self):
-        for origem in self.tabela_de_rotas:
-            print(f"✅ Roteador: {origem}")
-            for destino in self.tabela_de_rotas[origem]:
-                caminho = self.calcular_caminho(origem, destino)
-                if caminho:
-                    caminho_completo = " ➜ ".join(caminho)
-                    print(f"Destino: {destino}\tPróximo Salto: {self.tabela_de_rotas[origem][destino]}\tCaminho Completo: {caminho_completo}")
+    def exibir_caminhos(self) -> None:
+        """Display all calculated paths in the network."""
+        for source in self.tabela_de_rotas:
+            print(f"✅ Roteador: {source}")
+            for destination in self.tabela_de_rotas[source]:
+                path = self.calcular_caminho(source, destination)
+                if path:
+                    complete_path = " ➜ ".join(path)
+                    next_hop = self.tabela_de_rotas[source][destination]
+                    print(f"Destino: {destination}\tPróximo Salto: {next_hop}\t"
+                          f"Caminho Completo: {complete_path}")
                 else:
-                    print(f"Destino: {destino}\tCaminho inválido")
+                    print(f"Destino: {destination}\tCaminho inválido")
             print()
 
 if __name__ == "__main__":

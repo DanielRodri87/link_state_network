@@ -1,48 +1,107 @@
+"""
+Link State Advertisement Manager Module
+
+This module handles the creation, sending, and receiving of Link State Advertisements (LSAs)
+in a network routing environment. It manages the flooding of network topology information
+between routers.
+"""
+
 import socket
 import json
 import os
+from threading import Event
+from typing import Dict, Tuple, Any
 from class_net.neighbor_manager import VizinhosManager
 
-PORTA_LSA = 5000
+LSA_PORT = 5000
 
 class LSAManager:
-    def __init__(self, vizinhos_manager:VizinhosManager):
+    """
+    Manages Link State Advertisements (LSAs) for network routing.
+    
+    This class handles the creation, transmission, and reception of LSAs,
+    maintaining network topology information and sequence numbers.
+    
+    Attributes:
+        ROTEADOR_ID (str): Unique identifier for the router
+        ENDERECO_IP (str): IP address of the router
+        vizinhos_manager (VizinhosManager): Manager for neighbor relationships
+        sequence_number (int): Sequence number for LSA messages
+    """
+    
+    def __init__(self, vizinhos_manager: VizinhosManager):
+        """
+        Initialize the LSA Manager.
+        
+        Args:
+            vizinhos_manager: Manager instance for handling neighbor relationships
+        """
         self.ROTEADOR_ID = os.getenv("ROTEADOR_ID")
         self.ENDERECO_IP = os.getenv("ENDERECO_IP")
         self.vizinhos_manager = vizinhos_manager
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.seq = 0
+        self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sequence_number = 0
 
-    def enviar_lsa(self, event):
-        while not event.is_set():
-            self.seq += 1
-            lsa = {
+    def enviar_lsa(self, stop_event: Event) -> None:
+        """
+        Send Link State Advertisements to neighbors.
+        
+        Continuously sends LSA updates to all active neighbors until stopped.
+        
+        Args:
+            stop_event: Threading event to control the sending loop
+        """
+        while not stop_event.is_set():
+            self.sequence_number += 1
+            lsa_data = {
                 "id": self.ROTEADOR_ID,
                 "ip": self.ENDERECO_IP,
-                "vizinhos": {viz: {"ip": ip, "custo": custo} for viz, (ip, custo) in self.vizinhos_manager.VIZINHOS.items() if viz not in self.vizinhos_manager.vizinhos_inativos},
-                "seq": self.seq
+                "vizinhos": {
+                    neighbor: {"ip": ip, "custo": cost} 
+                    for neighbor, (ip, cost) in self.vizinhos_manager.VIZINHOS.items() 
+                    if neighbor not in self.vizinhos_manager.vizinhos_inativos
+                },
+                "seq": self.sequence_number
             }
-            mensagem = json.dumps(lsa).encode()
-            for viz, (ip, _) in self.vizinhos_manager.VIZINHOS.items():
-                if viz not in self.vizinhos_manager.vizinhos_inativos:
-                    self.sock.sendto(mensagem, (ip, PORTA_LSA))
-            event.wait(0.5)
+            
+            encoded_message = json.dumps(lsa_data).encode()
+            
+            for neighbor, (ip, _) in self.vizinhos_manager.VIZINHOS.items():
+                if neighbor not in self.vizinhos_manager.vizinhos_inativos:
+                    self.udp_socket.sendto(encoded_message, (ip, LSA_PORT))
+                    
+            stop_event.wait(0.5)
 
-    def receber_lsa(self, lsdb, event):
-        recv_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        recv_sock.bind(("0.0.0.0", PORTA_LSA))
-        while not event.is_set():
+    def receber_lsa(self, lsa_database: Dict[str, Any], stop_event: Event) -> None:
+        """
+        Receive and process Link State Advertisements.
+        
+        Listens for incoming LSAs, updates the database, and forwards to other neighbors.
+        
+        Args:
+            lsa_database: Database storing LSA information
+            stop_event: Threading event to control the receiving loop
+        """
+        receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        receiver_socket.bind(("0.0.0.0", LSA_PORT))
+        
+        while not stop_event.is_set():
             try:
-                dados, addr = recv_sock.recvfrom(4096)
-                sender_ip = addr[0]
-                lsa = json.loads(dados.decode())
-                origem = lsa["id"]
-                # print(f"[{self.ROTEADOR_ID}] Recebendo LSA de {origem} ({sender_ip})")
-                if origem not in lsdb or lsa["seq"] > lsdb[origem]["seq"]:
-                    lsdb[origem] = lsa
-                    for viz, (ip, _) in self.vizinhos_manager.VIZINHOS.items():
-                        if ip != sender_ip and viz not in self.vizinhos_manager.vizinhos_inativos:
-                            recv_sock.sendto(dados, (ip, PORTA_LSA))
-                            print(f"[{self.ROTEADOR_ID}] Encaminhando LSA para {viz} ({ip})")
+                data, address = receiver_socket.recvfrom(4096)
+                sender_ip = address[0]
+                lsa_message = json.loads(data.decode())
+                source_router = lsa_message["id"]
+                
+                if (source_router not in lsa_database or 
+                    lsa_message["seq"] > lsa_database[source_router]["seq"]):
+                    lsa_database[source_router] = lsa_message
+                    
+                    # Forward LSA to other neighbors
+                    for neighbor, (ip, _) in self.vizinhos_manager.VIZINHOS.items():
+                        if (ip != sender_ip and 
+                            neighbor not in self.vizinhos_manager.vizinhos_inativos):
+                            receiver_socket.sendto(data, (ip, LSA_PORT))
+                            print(f"[{self.ROTEADOR_ID}] Encaminhando LSA para {neighbor} ({ip})")
+                            
             except socket.timeout:
                 continue

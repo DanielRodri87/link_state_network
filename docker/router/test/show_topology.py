@@ -1,70 +1,113 @@
+"""
+Network Topology Visualization Module
+
+This module provides functionality to visualize and identify network topologies
+from YAML configuration files using NetworkX and Matplotlib.
+"""
+
 import yaml
 import networkx as nx
 import matplotlib.pyplot as plt
 import os
+from typing import Dict, Any
 
-def ler_topologia():
-    # Lê o arquivo config.yaml gerado
+def ler_topologia() -> nx.Graph:
+    """
+    Read and parse network topology from configuration file.
+    
+    Returns:
+        nx.Graph: NetworkX graph representing the network topology
+    """
+    # Fix path resolution to config.yaml
     config_path = os.path.join(
-        os.path.dirname(__file__), 
-        '../../../gera_yml/config.yaml'
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
+        'generate_compose',
+        'config.yaml'
     )
     
-    with open(config_path, 'r') as file:
-        config = yaml.safe_load(file)
+    with open(config_path, 'r') as config_file:
+        network_config = yaml.safe_load(config_file)
     
-    G = nx.Graph()
+    topology_graph = nx.Graph()
     
-    # Adiciona roteadores como nós
-    for roteador in config['routers']:
-        G.add_node(roteador['id'])
+    # Add routers as nodes
+    for router in network_config['routers']:
+        topology_graph.add_node(router['id'])
     
-    # Adiciona conexões entre os roteadores
-    for roteador in config['routers']:
-        for vizinho in roteador['neighbors']:
-            G.add_edge(roteador['id'], vizinho['id'])
+    # Add connections between routers
+    for router in network_config['routers']:
+        for neighbor in router['neighbors']:
+            topology_graph.add_edge(router['id'], neighbor['id'])
     
-    return G
+    return topology_graph
 
-def identificar_topologia(G):
-    num_nodes = G.number_of_nodes()
-    num_edges = G.number_of_edges()
+def identificar_topologia(topology_graph: nx.Graph) -> str:
+    """
+    Identify the type of network topology from the graph structure.
+    
+    Args:
+        topology_graph: NetworkX graph representing the network topology
+        
+    Returns:
+        str: Identified topology type
+    """
+    node_count = topology_graph.number_of_nodes()
+    edge_count = topology_graph.number_of_edges()
 
-    # Verifica se é Totalmente Conectada
-    if num_edges == (num_nodes * (num_nodes - 1)) // 2:
+    # Check for Fully Connected topology
+    if edge_count == (node_count * (node_count - 1)) // 2:
         return "Totalmente Conectada"
 
-    # Verifica se é Anel
-    if nx.is_connected(G) and all(d == 2 for n, d in G.degree()):
+    # Check for Ring topology
+    if (nx.is_connected(topology_graph) and 
+        all(degree == 2 for _, degree in topology_graph.degree())):
         return "Anel"
 
-    # Verifica se é Estrela
-    degrees = [d for n, d in G.degree()]
-    if degrees.count(1) == num_nodes - 1 and degrees.count(num_nodes - 1) == 1:
+    # Check for Star topology
+    degree_counts = [degree for _, degree in topology_graph.degree()]
+    if (degree_counts.count(1) == node_count - 1 and 
+        degree_counts.count(node_count - 1) == 1):
         return "Estrela"
 
-    # Verifica se é Linha (grau máximo 2, dois nós com grau 1 e resto grau 2)
-    if nx.is_connected(G):
-        degree_vals = [d for n, d in G.degree()]
-        if degree_vals.count(1) == 2 and all(d <= 2 for d in degree_vals):
+    # Check for Line topology
+    if nx.is_connected(topology_graph):
+        node_degrees = [degree for _, degree in topology_graph.degree()]
+        if (node_degrees.count(1) == 2 and 
+            all(degree <= 2 for degree in node_degrees)):
             return "Linha"
 
-    # Verifica se é Árvore (conectado e sem ciclos)
-    if nx.is_tree(G):
+    # Check for Tree topology
+    if nx.is_tree(topology_graph):
         return "Árvore"
 
     return "Customizada"
 
-def mostrar_topologia():
-    G = ler_topologia()
-    tipo_topologia = identificar_topologia(G)
+def mostrar_topologia() -> None:
+    """
+    Display the network topology visualization using matplotlib.
     
-    pos = nx.spring_layout(G, seed=42)
+    Reads the topology configuration, identifies the topology type,
+    and displays a graphical representation.
+    """
+    topology_graph = ler_topologia()
+    topology_type = identificar_topologia(topology_graph)
+    
+    # Calculate node positions for visualization
+    node_positions = nx.spring_layout(topology_graph, seed=42)
+    
+    # Create and configure the plot
     plt.figure(figsize=(10, 10))
-    nx.draw(G, pos, with_labels=True, node_color='lightblue', 
-            node_size=2000, font_size=16, font_weight='bold')
+    nx.draw(
+        topology_graph, 
+        node_positions, 
+        with_labels=True, 
+        node_color='lightblue',
+        node_size=2000, 
+        font_size=16, 
+        font_weight='bold'
+    )
     
-    plt.title(f"Topologia da Rede: {tipo_topologia}", pad=20, fontsize=16)
+    plt.title(f"Topologia da Rede: {topology_type}", pad=20, fontsize=16)
     plt.show()
 
 if __name__ == "__main__":

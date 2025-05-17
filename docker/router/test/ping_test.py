@@ -1,34 +1,57 @@
+"""
+Router Connectivity Testing Module
+
+This module provides functionality to test and verify network connectivity
+between routers in a Docker network environment using ICMP ping.
+"""
+
 import subprocess
 import sys
 import os
+from typing import List, Tuple
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from class_net.manipulation import Manipulacao
 from class_net.message import Mensagem
 
-def teste_de_ping_roteadores():
-    falha = []
+def teste_de_ping_roteadores() -> None:
+    """
+    Test network connectivity between all routers.
     
-    roteadores = Manipulacao.roteadores_encontrados()
-    for r_origem in roteadores:
-        print(f"Testando {r_origem}...")
-        for r_destino in roteadores:
+    Performs ICMP ping tests between all router pairs in the network
+    and reports success or failure for each connection attempt.
+    """
+    failed_connections: List[Tuple[str, str]] = []
+    router_list = Manipulacao.roteadores_encontrados()
+    
+    for source_router in router_list:
+        print(f"Testando {source_router}...")
+        for target_router in router_list:
             try:
-                ip = Manipulacao.extrair_ip_roteadores(r_destino)
-                comando = f"docker exec {r_origem} ping -c 1 -W 0.1 {ip}"
-                result = subprocess.run(comando, shell=True, check=True, text=True, capture_output=True)
-                if result.returncode == 0:
-                    print(Mensagem.formatar_sucesso(f"{r_origem} -> {r_destino}  sucesso."))
-            except subprocess.CalledProcessError as e:
-                print(Mensagem.formatar_erro(f"{r_origem} -> {r_destino}  falhou."))
-                falha.append([r_origem, r_destino])
-            
+                target_ip = Manipulacao.extrair_ip_roteadores(target_router)
+                ping_command = f"docker exec {source_router} ping -c 1 -W 0.1 {target_ip}"
+                command_result = subprocess.run(
+                    ping_command, 
+                    shell=True, 
+                    check=True, 
+                    text=True, 
+                    capture_output=True
+                )
+                if command_result.returncode == 0:
+                    print(Mensagem.formatar_sucesso(
+                        f"{source_router} -> {target_router} sucesso."
+                    ))
+            except subprocess.CalledProcessError:
+                print(Mensagem.formatar_erro(
+                    f"{source_router} -> {target_router} falhou."
+                ))
+                failed_connections.append([source_router, target_router])
         print('\n')
         
-    if falha:
+    if failed_connections:
         print("Roteadores com falha:")
-        for roteador, destino in falha:
-            print(Mensagem.formatar_erro(f"{roteador} -> {destino}  falhou."))
+        for source, target in failed_connections:
+            print(Mensagem.formatar_erro(f"{source} -> {target} falhou."))
         print('\n')
 
 if __name__ == "__main__":
