@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copiar os arquivos do roteador para dentro do container
 COPY main.py /app/main.py
-COPY classes/ /app/classes/
+COPY class_net/ /app/class_net/
 COPY requirements.txt /app/
 
 # Instalar dependências

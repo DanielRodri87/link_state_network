@@ -1,10 +1,5 @@
 all:
 	@docker-compose up --build
-	
-gerar_compose:
-	@cd gera_yml && pip install --quiet -r requirements.txt
-	@cd gera_yml && python3 gerar_yaml.py
-	@cd gera_yml && python3 docker_compose_create.py
 
 down:
 	@docker-compose down 
@@ -12,23 +7,23 @@ down:
 clean:
 	docker compose down --rmi all --volumes --remove-orphans
 
-teste_ping:
-	@cd docker/roteador/test && python3 teste_ping.py
+ping:
+	@cd docker/router/test && python3 ping_test.py
 
-teste_rotas:
-	@cd docker/roteador/test && python3 teste_rotas.py
+rotas:
+	@cd docker/router/test && python3 route_test.py
 
-teste_vias:
-	@cd docker/roteador/test && python3 teste_vias.py
+vias:
+	@cd docker/router/test && python3 path_test.py
 
-teste_ping_host:
-	@cd docker/host/script_teste && python3 teste_ping.py
+ping_host:
+	@cd docker/host/test_script && python3 ping_test.py
+
+topologia:
+	@cd docker/router/test && python3 show_topology.py
+
+limiar:
+	@cd docker/router/test && python3 thresholds.py
 
 install_deps:
 	pip install --break-system-packages networkx matplotlib pyyaml
-
-topologia:
-	@cd docker/roteador/test && python3 mostrar_topologia.py
-
-limiar:
-	@cd docker/roteador/test && python3 limiares.py

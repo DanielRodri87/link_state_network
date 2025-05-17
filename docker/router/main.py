@@ -1,5 +1,5 @@
 import os
-from classes.roteador import RoteadorApp
+from class_net.router import RoteadorApp
 
 if __name__ == "__main__":
     roteador = RoteadorApp()

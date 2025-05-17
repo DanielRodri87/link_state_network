@@ -1,9 +1,9 @@
 import threading
 import os
-from classes.gerenciar_vizinhos import VizinhosManager
-from classes.gerenciar_lsa import LSAManager
-from classes.atualiza_rota import AtualizadorDeRotas
-from classes.gerenciador_rota import GerenciadorDeRotas
+from class_net.neighbor_manager import VizinhosManager
+from class_net.lsa_manager import LSAManager
+from class_net.route_update import AtualizadorDeRotas
+from class_net.route_manager import GerenciadorDeRotas
 
 class RoteadorApp:
     def __init__(self):

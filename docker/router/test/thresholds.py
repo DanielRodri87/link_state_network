@@ -47,8 +47,8 @@ import seaborn as sns
 
 # Adicionando o diretório pai ao path para importar os módulos
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from classes.manipulacao import Manipulacao
-from classes.mensagem import Mensagem
+from class_net.manipulation import Manipulacao
+from class_net.message import Mensagem
 
 def executar_teste_ping():
     """

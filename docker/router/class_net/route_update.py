@@ -1,7 +1,7 @@
 import subprocess
 import os
-from classes.manipulacao import Manipulacao
-from classes.gerenciador_rota import GerenciadorDeRotas
+from class_net.manipulation import Manipulacao
+from class_net.route_manager import GerenciadorDeRotas
 
 class AtualizadorDeRotas:
     def __init__(self,gerenciador_de_rotas:GerenciadorDeRotas):

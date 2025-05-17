@@ -1,7 +1,7 @@
 import socket
 import json
 import os
-from classes.gerenciar_vizinhos import VizinhosManager
+from class_net.neighbor_manager import VizinhosManager
 
 PORTA_LSA = 5000
 

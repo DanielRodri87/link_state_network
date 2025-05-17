@@ -8,15 +8,15 @@ class Host:
     @staticmethod
     def formatar_mensagem(mensagem, cor_rgb):
         r, g, b = cor_rgb
-        return f"\033[38;2;{r};{g};{b}m{mensagem}\033[0m"  # Adds custom RGB color to the message
+        return f"\033[38;2;{r};{g};{b}m{mensagem}\033[0m"  
     
     @staticmethod
     def formatar_sucesso(mensagem):
-        return Host.formatar_mensagem(mensagem, (0, 255, 0))  # Green color for success
+        return Host.formatar_mensagem(mensagem, (0, 255, 0)) 
     
     @staticmethod
     def formatar_erro(mensagem):
-        return Host.formatar_mensagem(mensagem, (255, 0, 0))  # Red color for error
+        return Host.formatar_mensagem(mensagem, (255, 0, 0)) 
     
     @staticmethod
     def roteadores_encontrados():

@@ -8,9 +8,6 @@ class Manipulacao:
         result = subprocess.run(comando, shell=True, check=True, text=True, capture_output=True)
         roteadores = [r.strip("'") for r in result.stdout.split('\n') if r]
         return roteadores
-
-    # destino_ip = Manipulacao.extrair_subnet_roteador_ip(destino)
-    # prox_salto_ip = Manipulacao.extrair_ip_roteadores_ip(prox_salto)
     
     @staticmethod
     def extrair_numero_roteador(roteador_name):
@@ -72,13 +69,11 @@ class Manipulacao:
                         numero_roteador = int(n1) + 1
                     traducao.append(f'roteador{numero_roteador}')
                 except (ValueError, IndexError):
-                    # Handle unexpected hop format gracefully
                     continue
         
         return ' -> '.join(traducao)
     
 if __name__ == "__main__":
-    # Teste da classe Manipulacao
     ip = '172.21.1.2'
     
     print(Manipulacao.extrair_numero_roteador_ip(ip))
