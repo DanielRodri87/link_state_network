@@ -29,10 +29,10 @@ pip install make
 Para gerar uma topologia:
 
 ```bash
-cd gera_yml
+cd generate_compose
 ```
 ```bash
-python3 gerar_yaml.py
+python3 yaml_generator.py
 ```
 
 ```bash
@@ -86,7 +86,6 @@ Durante a execução, uma topologia aleatória é escolhida entre:
 
 - 🌟 **Estrela**
 - 🔗 **Anel**
-- 🔄 **Totalmente conectada**
 - 🌳 **Árvore**
 - 📏 **Linha**
 
