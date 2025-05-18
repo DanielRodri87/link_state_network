@@ -50,9 +50,18 @@
     
     \vfill
     {\large Picos - PI\\
-    2024}
+    2025}
 \end{center}
 \end{titlepage}
+
+\chapter{Links Complementares}
+
+A seguir, estão disponibilizados os links que complementam a entrega deste trabalho, oferecendo acesso aos recursos adicionais desenvolvidos durante o projeto. O repositório no \textit{GitHub} contém todo o código-fonte, \textit{scripts} de teste, documentação e instruções de uso, permitindo a reprodução e análise da implementação. Já o vídeo no \textit{YouTube} apresenta uma demonstração prática do sistema em funcionamento, incluindo a explicação da topologia utilizada, os testes executados e os principais resultados obtidos.
+
+\begin{itemize}
+    \item \textbf{Repositório GitHub:} \url{https://github.com/DanielRodri87/link_state_network}
+    \item \textbf{Demonstração YouTube:} \url{https://youtu.be/qkxRrY2eHKk}
+\end{itemize}
 
 \chapter{Introdução}
 
@@ -70,7 +79,7 @@ Este trabalho foi conduzido com base em uma abordagem sistemática para a implem
 
 \section{Ambiente de Desenvolvimento}
 
-A implementação foi realizada utilizando a linguagem de programação Python, na versão 3.8, escolhida pela sua clareza sintática e pela ampla gama de bibliotecas voltadas ao tratamento de grafos e análise de redes. Dentre essas bibliotecas, destaca-se o uso do \textit{NetworkX} para a modelagem e manipulação da topologia de rede, bem como do \textit{Matplotlib} para a geração de visualizações gráficas que auxiliam na interpretação dos resultados. O desenvolvimento seguiu o paradigma de programação orientada a objetos, promovendo a modularização e a reutilização do código. Para garantir a consistência das dependências e a reprodutibilidade dos experimentos, foi configurado um ambiente virtual Python (\textit{venv}), no qual todas as bibliotecas necessárias foram instaladas de forma controlada.
+A implementação foi realizada utilizando a linguagem de programação Python, na versão 3.8, escolhida pela sua clareza sintática e pela ampla gama de bibliotecas voltadas ao tratamento de grafos e análise de redes. Dentre essas bibliotecas, destaca-se o uso do \textit{NetworkX} para a modelagem e manipulação da topologia de rede, bem como do \textit{Matplotlib} para a geração de visualizações gráficas que auxiliam na interpretação dos resultados. O desenvolvimento seguiu o paradigma de programação orientada a objetos, promovendo a modularização e a reutilização do código. Para garantir a consistência das dependências e a reprodutibilidade dos experimentos, foi configurado um ambiente virtual, no qual todas as bibliotecas necessárias foram instaladas de forma controlada.
 
 \section{Arquitetura da Rede}
 
@@ -134,7 +143,17 @@ A seguir, a Figura \ref{fig:classes} ilustra a arquitetura geral do sistema e a 
     \label{fig:classes}
 \end{figure}
 
-\chapter{Resultados}
+\section{Rede de Petri}
+O A Rede de Petri, representa o fluxo de comunicação entre dois hosts (Host1 e Host2) em uma rede, modelado por meio de uma rede de Petri. O processo se inicia com a preparação de um pacote por parte do Host1, que o envia ao primeiro roteador (Router1), onde é armazenado temporariamente em seu buffer. Em seguida, o pacote avança para o segundo roteador (Router2), passando também por seu buffer, até ser finalmente entregue ao Host2. Após o recebimento, o Host2 adiciona o pacote à sua lista de mensagens recebidas e, em seguida, envia uma mensagem de reconhecimento de volta ao Host1, sinalizando o sucesso da comunicação. Enquanto isso, o Host1 permanece em estado de espera até que o reconhecimento seja recebido, completando assim o ciclo de envio e confirmação da entrega. Esse modelo ilustra de forma clara e ordenada os principais estágios envolvidos no envio de dados entre dois pontos em uma rede com intermediários.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{redepetri.png}
+    \caption{Rede de Petri}
+    \label{fig:classes}
+\end{figure}
+
+\sextion*{Resultados}
 Nesta seção, serão apresentados os resultados obtidos durante a fase de testes, bem como a análise das questões propostas pelo professor. As reflexões abordarão os seguintes pontos: quais são os limites e o nível de estresse suportado pelo sistema; quais as principais vantagens da abordagem adotada; se é possível que um \textit{host} realize um \textit{ping} com sucesso para outro \textit{host}; e, por fim, qual foi a estratégia de implementação utilizada e os motivos que justificam essa escolha.
 
 \section{Limiares/Stress}
