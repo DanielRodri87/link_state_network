@@ -84,10 +84,10 @@ UDP é amplamente utilizado em:
 
 Durante a execução, uma topologia aleatória é escolhida entre:
 
-- 🌟 **Estrela**
-- 🔗 **Anel**
-- 🌳 **Árvore**
-- 📏 **Linha**
+- 🌟 **Estrela** Representa a topologia em estrela, onde todos os dispositivos se conectam a um ponto central (hub ou switch).
+- 🔗 **Anel** Refere-se à topologia em anel, onde cada dispositivo está conectado a dois outros, formando um circuito fechado.
+- 🌳 **Árvore** Simboliza a topologia em árvore, que combina características da estrela e do barramento, com uma estrutura hierárquica de dispositivos.
+- 📏 **Linha** Representa a topologia em barramento (linha), onde todos os dispositivos compartilham um único meio de comunicação linear.
 
 ## 🔧 Como funciona a construção
 
