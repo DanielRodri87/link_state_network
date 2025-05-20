@@ -24,6 +24,23 @@ Instale o Make com o comando:
 pip install make
 ```
 
+Bibliotecas utilizadas:
+```bash
+pip install matplotlib
+```
+
+```bash
+pip install networkx
+```
+
+```bash
+pip install yaml
+```
+
+```bash
+pip install psutil
+```
+
 ## ▶️ Como Executar
 
 Para gerar uma topologia:
