@@ -86,7 +86,7 @@ Esses comandos irão:
 A comunicação entre os hosts e roteadores é feita usando o **UDP (User Datagram Protocol)**.
 
 ### Por que UDP?
--- (Explicações mais detalhadas no relatório técnico)
+<sub>(Explicações mais detalhadas no relatório técnico)</sub>
 - ⚡ **Alta velocidade**: ideal para aplicações em tempo real.
 - 🔁 **Sem confirmação**: não há verificação de entrega dos pacotes, o que simplifica a simulação.
 - ⚙️ **Leve e simples**: menos sobrecarga que o TCP.
